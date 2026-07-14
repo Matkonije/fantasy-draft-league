@@ -4,14 +4,17 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import admin, auth, drafts, fantasy_leagues, leagues, players
+from app.jobs.scheduler import start_scheduler, stop_scheduler
+from app.routers import admin, auth, drafts, fantasy_leagues, leagues, lineups, players
 from app.services.draft_timer import watch_deadlines
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     timer_task = asyncio.create_task(watch_deadlines())
+    start_scheduler()
     yield
+    stop_scheduler()
     timer_task.cancel()
 
 
@@ -30,6 +33,7 @@ app.include_router(players.router)
 app.include_router(leagues.router)
 app.include_router(fantasy_leagues.router)
 app.include_router(drafts.router)
+app.include_router(lineups.router)
 app.include_router(admin.router)
 
 

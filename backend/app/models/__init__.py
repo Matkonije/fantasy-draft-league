@@ -2,6 +2,7 @@ from app.models.user import User
 from app.models.league import League
 from app.models.player import Player, PlayerStatsWeekly
 from app.models.fantasy import Draft, DraftPick, FantasyLeague, Team
+from app.models.gameweek import Gameweek, LineupSlot, TeamGameweekScore
 
 __all__ = [
     "User",
@@ -12,4 +13,7 @@ __all__ = [
     "Team",
     "Draft",
     "DraftPick",
+    "Gameweek",
+    "LineupSlot",
+    "TeamGameweekScore",
 ]

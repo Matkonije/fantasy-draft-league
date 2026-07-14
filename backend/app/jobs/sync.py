@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.data_sources import fpl
-from app.models import League, Player, PlayerStatsWeekly
+from app.models import Gameweek, League, Player, PlayerStatsWeekly
 
 
 def get_or_create_premier_league(db: Session) -> League:
@@ -51,6 +51,35 @@ def sync_players(db: Session) -> dict:
 
     db.commit()
     return {"created": created, "updated": updated, "total_elements": len(elements)}
+
+
+def sync_gameweeks(db: Session) -> dict:
+    """Upsert the gameweek schedule (deadlines, finished flags) from FPL bootstrap events."""
+    from datetime import datetime
+
+    data = fpl.fetch_bootstrap()
+    league = get_or_create_premier_league(db)
+    events = data.get("events", [])
+
+    existing = {
+        gw.number: gw
+        for gw in db.scalars(select(Gameweek).where(Gameweek.league_id == league.id))
+    }
+    upserted = 0
+    for ev in events:
+        deadline = None
+        if ev.get("deadline_time"):
+            deadline = datetime.fromisoformat(ev["deadline_time"].replace("Z", "+00:00"))
+        gw = existing.get(ev["id"])
+        if gw is None:
+            db.add(Gameweek(league_id=league.id, number=ev["id"], deadline=deadline,
+                            finished=ev.get("finished", False)))
+        else:
+            gw.deadline = deadline
+            gw.finished = ev.get("finished", False)
+        upserted += 1
+    db.commit()
+    return {"gameweeks": upserted}
 
 
 def sync_gameweek(db: Session, gameweek: int) -> dict:

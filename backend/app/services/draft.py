@@ -7,7 +7,9 @@ from datetime import datetime, timedelta, timezone
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.models import Draft, DraftPick, FantasyLeague, Player, Team
+from sqlalchemy import func
+
+from app.models import Draft, DraftPick, FantasyLeague, Player, Team, TeamGameweekScore
 
 # roster: 15 slots — starters 1 GK / 4 DEF / 4 MID / 2 FWD + bench 1 GK / 3 outfield
 ROSTER_SIZE = 15
@@ -51,9 +53,19 @@ def create_draft(db: Session, fantasy_league: FantasyLeague) -> Draft:
     if len(team_ids) < 2:
         raise DraftError("At least 2 teams are required to start a draft")
 
-    # Phase 2 will order by reverse standings of the previous period;
-    # with no scores yet the first draft order is random.
-    random.shuffle(team_ids)
+    # reverse standings: worst cumulative score picks first; random for the first draft
+    totals = dict(
+        db.execute(
+            select(TeamGameweekScore.team_id, func.sum(TeamGameweekScore.points))
+            .where(TeamGameweekScore.team_id.in_(team_ids))
+            .group_by(TeamGameweekScore.team_id)
+        ).all()
+    )
+    if totals:
+        random.shuffle(team_ids)  # random tiebreak for teams on equal points
+        team_ids.sort(key=lambda tid: totals.get(tid, 0))
+    else:
+        random.shuffle(team_ids)
 
     draft = Draft(fantasy_league_id=fantasy_league.id, draft_order=team_ids, rounds=ROSTER_SIZE)
     db.add(draft)

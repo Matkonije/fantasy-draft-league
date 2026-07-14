@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session, selectinload
 
 from app.database import get_db
-from app.models import Draft, FantasyLeague, League, Team, User
+from app.models import Draft, FantasyLeague, League, Team, TeamGameweekScore, User
 from app.schemas.fantasy import FantasyLeagueCreate, FantasyLeagueJoin, FantasyLeagueOut
+from app.schemas.lineup import StandingRow, StandingsOut, TeamScoreOut
 from app.services.auth import get_current_user
 from app.services.draft import generate_invite_code
 
@@ -85,3 +86,50 @@ def fantasy_league_detail(
     fantasy_league_id: int, db: Session = Depends(get_db), _: User = Depends(get_current_user)
 ):
     return get_league_or_404(db, fantasy_league_id)
+
+
+@router.get("/{fantasy_league_id}/standings", response_model=StandingsOut)
+def standings(
+    fantasy_league_id: int, db: Session = Depends(get_db), _: User = Depends(get_current_user)
+):
+    fl = get_league_or_404(db, fantasy_league_id)
+    rows = db.execute(
+        select(
+            Team.id,
+            Team.name,
+            User.username,
+            func.coalesce(func.sum(TeamGameweekScore.points), 0),
+            func.count(TeamGameweekScore.id),
+        )
+        .join(User, User.id == Team.user_id)
+        .outerjoin(TeamGameweekScore, TeamGameweekScore.team_id == Team.id)
+        .where(Team.fantasy_league_id == fl.id)
+        .group_by(Team.id, Team.name, User.username)
+        .order_by(func.coalesce(func.sum(TeamGameweekScore.points), 0).desc())
+    ).all()
+    return StandingsOut(
+        fantasy_league_id=fl.id,
+        standings=[
+            StandingRow(
+                rank=i + 1, team_id=tid, team_name=tname, username=uname,
+                total_points=total, gameweeks_scored=gws,
+            )
+            for i, (tid, tname, uname, total, gws) in enumerate(rows)
+        ],
+    )
+
+
+@router.get("/{fantasy_league_id}/scores/{gameweek}", response_model=list[TeamScoreOut])
+def gameweek_scores(
+    fantasy_league_id: int,
+    gameweek: int,
+    db: Session = Depends(get_db),
+    _: User = Depends(get_current_user),
+):
+    fl = get_league_or_404(db, fantasy_league_id)
+    team_ids = [t.id for t in fl.teams]
+    return db.scalars(
+        select(TeamGameweekScore).where(
+            TeamGameweekScore.team_id.in_(team_ids), TeamGameweekScore.gameweek == gameweek
+        )
+    ).all()
