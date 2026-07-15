@@ -1,0 +1,35 @@
+/* Bricolage Grotesque — section headings (self-hosted via @fontsource) */
+@import '@fontsource/bricolage-grotesque/700.css';
+@import '@fontsource/bricolage-grotesque/800.css';
+/* Pretendard — body, UI, forms (self-hosted npm package) */
+@import 'pretendard/dist/web/static/pretendard.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Getai Grotesk Display — ONLY the hero title (SIL OFL, files in /fonts) */
+@font-face {
+  font-family: 'Getai Grotesk';
+  src: url('/fonts/DTGetaiGroteskDisplay-Black.otf') format('opentype'),
+       url('/fonts/DTGetaiGroteskDisplay-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: block;
+}
+
+body {
+  @apply bg-surface text-primary font-body antialiased;
+}
+
+.hero-title {
+  font-family: 'Getai Grotesk', 'Bricolage Grotesque', sans-serif;
+  font-size: clamp(60px, 14vw, 220px);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 0.92;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
