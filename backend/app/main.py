@@ -5,7 +5,17 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.jobs.scheduler import start_scheduler, stop_scheduler
-from app.routers import admin, auth, drafts, fantasy_leagues, leagues, lineups, players
+from app.routers import (
+    admin,
+    auth,
+    drafts,
+    fantasy_leagues,
+    leagues,
+    lineups,
+    notifications,
+    players,
+    trades,
+)
 from app.services.draft_timer import watch_deadlines
 
 
@@ -34,6 +44,8 @@ app.include_router(leagues.router)
 app.include_router(fantasy_leagues.router)
 app.include_router(drafts.router)
 app.include_router(lineups.router)
+app.include_router(trades.router)
+app.include_router(notifications.router)
 app.include_router(admin.router)
 
 

@@ -9,6 +9,7 @@ from sqlalchemy import select
 from app.database import SessionLocal
 from app.models import Draft
 from app.services import draft as draft_service
+from app.services import trade as trade_service
 from app.services.ws import manager
 
 logger = logging.getLogger(__name__)
@@ -32,9 +33,17 @@ def _expired_auto_picks() -> list[dict]:
     return events
 
 
+def _expired_trades() -> list[int]:
+    with SessionLocal() as db:
+        return trade_service.expire_overdue(db)
+
+
 async def watch_deadlines() -> None:
     while True:
         try:
+            expired = await asyncio.to_thread(_expired_trades)
+            if expired:
+                logger.info("Expired voting trades rejected: %s", expired)
             events = await asyncio.to_thread(_expired_auto_picks)
             for event in events:
                 await manager.broadcast(event["draft_id"], event)

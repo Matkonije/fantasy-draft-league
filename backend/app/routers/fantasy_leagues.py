@@ -36,6 +36,8 @@ def create_fantasy_league(
         invite_code=generate_invite_code(),
         commissioner_id=user.id,
         pick_timer_seconds=body.pick_timer_seconds,
+        trade_window_days=body.trade_window_days,
+        max_trades_per_period=body.max_trades_per_period,
     )
     db.add(fl)
     db.flush()

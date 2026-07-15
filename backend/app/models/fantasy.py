@@ -15,6 +15,8 @@ class FantasyLeague(Base):
     invite_code: Mapped[str] = mapped_column(String(12), unique=True, index=True)
     commissioner_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     pick_timer_seconds: Mapped[int] = mapped_column(default=90)
+    trade_window_days: Mapped[int] = mapped_column(default=3, server_default="3")
+    max_trades_per_period: Mapped[int] = mapped_column(default=2, server_default="2")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     teams: Mapped[list["Team"]] = relationship(back_populates="fantasy_league")

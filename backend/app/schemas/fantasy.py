@@ -10,6 +10,8 @@ class FantasyLeagueCreate(BaseModel):
     league_id: int
     team_name: str = Field(min_length=2, max_length=100)
     pick_timer_seconds: int = Field(90, ge=10, le=600)
+    trade_window_days: int = Field(3, ge=1, le=14)
+    max_trades_per_period: int = Field(2, ge=0, le=10)
 
 
 class FantasyLeagueJoin(BaseModel):
@@ -35,6 +37,8 @@ class FantasyLeagueOut(BaseModel):
     invite_code: str
     commissioner_id: int
     pick_timer_seconds: int
+    trade_window_days: int
+    max_trades_per_period: int
     teams: list[TeamOut] = []
 
 
