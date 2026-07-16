@@ -6,13 +6,13 @@ import * as THREE from 'three'
 // illusion: ball right in front of the camera, goal far away in the distance
 const BALL_START = new THREE.Vector3(0, -0.15, 2.3)
 const GOAL_POS = new THREE.Vector3(0, -1.2, -14)
-// end of flight: INSIDE the goal mouth (below the crossbar, right of centre)
-const GOAL_ENTRY = new THREE.Vector3(2.1, 0.25, -13.1)
+// end of flight: INSIDE the goal mouth (clearly below the crossbar, right of centre)
+const GOAL_ENTRY = new THREE.Vector3(1.5, -0.45, -13.2)
 const CAMERA: [number, number, number] = [0, 0.2, 4.5]
 const CAMERA_FAR = 40
 const FOV = 42
-const TRAVEL_END = 0.84 // scroll progress at which the ball crosses the goal line
-const GOAL_BLUR_PX = 9 // starting blur of the distant goal, decays to 0 by 75% scroll
+const TRAVEL_END = 0.88 // scroll progress at which the ball crosses the goal line
+const GOAL_BLUR_PX = 9 // starting blur of the distant goal, decays to 0 by 70% scroll
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
 const easeInOut = (t: number) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2)
@@ -64,7 +64,7 @@ function Ball({ progressRef }: { progressRef: MutableRefObject<number> }) {
 
     // extra frames after crossing the line: the ball pushes into the net,
     // dips slightly and shrinks away instead of popping out instantly
-    const into = clamp01((p - TRAVEL_END) / 0.12)
+    const into = clamp01((p - TRAVEL_END) / 0.1)
     g.position.z -= into * 1.1
     g.position.y -= into * 0.2
     g.scale.setScalar(Math.max(1 - into, 0.0001))
@@ -113,7 +113,7 @@ export function HeroScene({ progressRef }: { progressRef: MutableRefObject<numbe
     let raf = 0
     let lastBlur = -1
     const tick = () => {
-      const p = clamp01(progressRef.current / 0.75)
+      const p = clamp01(progressRef.current / 0.7)
       const blur = Math.round(GOAL_BLUR_PX * (1 - p) * 10) / 10
       if (blur !== lastBlur && goalLayerRef.current) {
         goalLayerRef.current.style.filter = blur > 0.2 ? `blur(${blur}px)` : 'none'

@@ -39,8 +39,8 @@ export function Hero() {
           const p = self.progress
           progressRef.current = p
 
-          // title reveal ONLY at the "goal" moment — ball reaches the net at ~0.82
-          const t = clamp01((p - 0.82) / 0.12)
+          // title reveal at the very end — the sharp goal gets its own moment first
+          const t = clamp01((p - 0.94) / 0.06)
           gsap.set(titleRef.current, {
             opacity: t,
             y: 48 * (1 - t),
@@ -48,12 +48,12 @@ export function Hero() {
           })
 
           // tagline + CTA follow right after the title
-          const g = clamp01((p - 0.9) / 0.1)
+          const g = clamp01((p - 0.96) / 0.04)
           gsap.set(taglineRef.current, { opacity: g, y: 24 * (1 - g) })
 
           // scroll hint fades out immediately; scene dims slightly once the title owns the stage
           gsap.set(scrollHintRef.current, { opacity: 1 - clamp01(p * 6) })
-          gsap.set(sceneWrapRef.current, { opacity: 1 - 0.4 * clamp01((p - 0.92) / 0.08) })
+          gsap.set(sceneWrapRef.current, { opacity: 1 - 0.4 * clamp01((p - 0.95) / 0.05) })
         },
       })
     }, wrapRef)
