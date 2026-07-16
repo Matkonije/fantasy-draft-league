@@ -1,33 +1,32 @@
 const links = [
   { href: '#lige', label: 'Lige' },
   { href: '#kako-radi', label: 'Kako radi' },
-  { href: '#faq', label: 'FAQ' },
-  { href: '#pravila', label: 'Pravila' },
 ]
 
 export function NavBar() {
   return (
-    <header className="sticky top-0 z-50 border-b border-primary/10 bg-surface">
-      <div className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between px-4 md:px-12">
-        <a href="#" className="font-heading text-2xl font-bold" aria-label="FDL — početna">
-          FDL
+    <header className="sticky top-3 z-50 px-3 md:px-6">
+      {/* full green rounded bar, per Figma */}
+      <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between rounded-2xl bg-accent px-3 shadow-level-2 md:px-5">
+        <a href="#" aria-label="FDL — početna" className="flex items-center">
+          <img src="/logos/fdl-crest.png" alt="FDL grb" className="h-10 w-auto object-contain" />
         </a>
-        <nav className="hidden gap-2 md:flex">
+        <nav className="flex items-center gap-8">
           {links.map((l) => (
             <a
               key={l.href}
               href={l.href}
-              className="rounded-md px-3 py-2 text-sm font-semibold text-muted transition-colors hover:bg-surface-1 hover:text-primary"
+              className="text-sm font-semibold text-white transition-opacity hover:opacity-80"
             >
               {l.label}
             </a>
           ))}
         </nav>
         <a
-          href="#prijava"
-          className="rounded bg-accent px-6 py-2 text-sm font-semibold text-white transition-colors hover:bg-accent-hover"
+          href="#"
+          className="rounded-full bg-white px-5 py-1.5 text-sm font-semibold text-accent-dark transition-colors hover:bg-surface"
         >
-          Započni
+          Pridruži se
         </a>
       </div>
     </header>

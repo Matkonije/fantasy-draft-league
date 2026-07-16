@@ -11,7 +11,7 @@ const GOAL_ENTRY = new THREE.Vector3(1.5, -0.45, -13.2)
 const CAMERA: [number, number, number] = [0, 0.2, 4.5]
 const CAMERA_FAR = 40
 const FOV = 42
-const TRAVEL_END = 0.88 // scroll progress at which the ball crosses the goal line
+const TRAVEL_END = 0.75 // scroll progress at which the ball crosses the goal line
 const GOAL_BLUR_PX = 9 // starting blur of the distant goal, decays to 0 by 70% scroll
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v))
@@ -113,7 +113,7 @@ export function HeroScene({ progressRef }: { progressRef: MutableRefObject<numbe
     let raf = 0
     let lastBlur = -1
     const tick = () => {
-      const p = clamp01(progressRef.current / 0.7)
+      const p = clamp01(progressRef.current / 0.6)
       const blur = Math.round(GOAL_BLUR_PX * (1 - p) * 10) / 10
       if (blur !== lastBlur && goalLayerRef.current) {
         goalLayerRef.current.style.filter = blur > 0.2 ? `blur(${blur}px)` : 'none'

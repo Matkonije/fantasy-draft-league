@@ -9,8 +9,8 @@ export default {
         'surface-2': '#F1EEE7',
         primary: '#0F1E33',
         muted: '#44474D',
-        accent: '#10B981',
-        'accent-hover': '#0E9E6E',
+        accent: '#6AB058',
+        'accent-dark': '#517947',
       },
       fontFamily: {
         hero: ['"Getai Grotesk"', '"Bricolage Grotesque"', 'sans-serif'],

@@ -34,13 +34,14 @@ export function Hero() {
         trigger: wrapRef.current,
         start: 'top top',
         end: 'bottom bottom',
-        scrub: 0.4,
+        scrub: 0.3,
         onUpdate: (self) => {
           const p = self.progress
           progressRef.current = p
 
-          // title reveal at the very end — the sharp goal gets its own moment first
-          const t = clamp01((p - 0.94) / 0.06)
+          // strict order: ball travels (0-0.75), enters the net and vanishes (by 0.85),
+          // ONLY THEN the title comes in — no overlap between ball and text
+          const t = clamp01((p - 0.88) / 0.09)
           gsap.set(titleRef.current, {
             opacity: t,
             y: 48 * (1 - t),
@@ -48,12 +49,12 @@ export function Hero() {
           })
 
           // tagline + CTA follow right after the title
-          const g = clamp01((p - 0.96) / 0.04)
+          const g = clamp01((p - 0.95) / 0.05)
           gsap.set(taglineRef.current, { opacity: g, y: 24 * (1 - g) })
 
           // scroll hint fades out immediately; scene dims slightly once the title owns the stage
           gsap.set(scrollHintRef.current, { opacity: 1 - clamp01(p * 6) })
-          gsap.set(sceneWrapRef.current, { opacity: 1 - 0.4 * clamp01((p - 0.95) / 0.05) })
+          gsap.set(sceneWrapRef.current, { opacity: 1 - 0.4 * clamp01((p - 0.88) / 0.09) })
         },
       })
     }, wrapRef)
@@ -61,7 +62,7 @@ export function Hero() {
   }, [])
 
   return (
-    <div ref={wrapRef} className="relative h-[300vh]">
+    <div ref={wrapRef} className="relative h-[400vh]">
       <section className="sticky top-0 h-dvh overflow-hidden text-center">
         {/* full-screen 3D scene, no container — ball and goal live on the page background */}
         <div ref={sceneWrapRef} className="absolute inset-0 z-0">
@@ -82,7 +83,7 @@ export function Hero() {
         {/* hero title — hidden until the ball hits the net */}
         <h1
           ref={titleRef}
-          className="hero-title pointer-events-none absolute inset-x-0 top-[44%] z-10 -translate-y-1/2 uppercase opacity-0"
+          className="hero-title pointer-events-none absolute inset-x-0 top-[44%] z-10 -translate-y-1/2 uppercase text-accent opacity-0"
         >
           Fantasy
           <br />
@@ -96,15 +97,14 @@ export function Hero() {
           ref={taglineRef}
           className="absolute inset-x-0 bottom-14 z-20 mx-auto flex max-w-2xl flex-col items-center px-4 opacity-0 md:bottom-20"
         >
-          <p className="mb-6 text-lg font-medium text-muted text-pretty">
-            Iskusi pravi nogometni menadžment kroz snake draft sustav gdje je svaki igrač jedinstven
-            unutar tvoje lige. Nema duplikata, samo taktika.
+          <p className="mb-6 text-lg font-medium text-primary text-pretty">
+            Izvuci savršenu ekipu, skupi najviše bodova i pobijedi svoje prijatelje!
           </p>
           <a
-            href="#prijava"
-            className="rounded-lg bg-accent px-8 py-4 text-lg font-semibold text-white shadow-level-2 transition-transform hover:-translate-y-1 hover:bg-accent-hover"
+            href="#"
+            className="rounded-full bg-accent px-8 py-3 text-base font-semibold text-white shadow-level-2 transition-colors hover:bg-accent-dark"
           >
-            Započni svoju ligu
+            Pridruži se
           </a>
         </div>
 

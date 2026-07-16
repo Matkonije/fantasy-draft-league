@@ -61,7 +61,7 @@ export function AuthSection() {
             </div>
             <button
               type="submit"
-              className="mt-2 rounded-lg bg-accent py-3 font-semibold text-white transition-colors hover:bg-accent-hover"
+              className="mt-2 rounded-lg bg-accent py-3 font-semibold text-white transition-colors hover:bg-accent-dark"
             >
               {tab === 'login' ? 'Prijavi se' : 'Registriraj se'}
             </button>
